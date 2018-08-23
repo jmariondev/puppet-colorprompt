@@ -80,16 +80,18 @@
 # Copyright 2018 John Marion
 #
 class colorprompt (
-  $ensure            = $colorprompt::params::ensure,
-  $path              = $colorprompt::params::path,
-  $default_usercolor = $colorprompt::params::default_usercolor,
-  $custom_usercolors = $colorprompt::params::custom_usercolors,
-  $host_color        = $colorprompt::params::host_color,
-  $env_name          = $colorprompt::params::env_name,
-  $env_color         = $colorprompt::params::env_color,
-  $prompt            = $colorprompt::params::prompt,
-  $modify_skel       = $colorprompt::params::modify_skel,
-  $modify_root       = $colorprompt::params::modify_root,
+  String $ensure                                           = $colorprompt::params::ensure,
+  String $path                                             = $colorprompt::params::path,
+  # Oof, trying to turn a formerly-duck-typed language into a formally-typed
+  # language creates some fun declarations!
+  Variant[Undef, String, Array[String]] $default_usercolor = $colorprompt::params::default_usercolor,
+  Variant[Undef, Hash[String, String]] $custom_usercolors  = $colorprompt::params::custom_usercolors,
+  Variant[Undef, String, Array[String]]] $host_color       = $colorprompt::params::host_color,
+  Optional[String] $env_name                               = $colorprompt::params::env_name,
+  Variant[Undef, String, Array[String]]] $env_color        = $colorprompt::params::env_color,
+  String $prompt                                           = $colorprompt::params::prompt,
+  Boolean $modify_skel                                     = $colorprompt::params::modify_skel,
+  Boolean $modify_root                                     = $colorprompt::params::modify_root,
 ) inherits colorprompt::params {
   file { 'colorprompt.sh':
     ensure  => $ensure,
