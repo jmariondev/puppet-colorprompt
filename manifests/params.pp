@@ -1,16 +1,13 @@
-# Default parameters
 class colorprompt::params {
-
   $ensure            = present
   $path              = '/etc/profile.d/colorprompt.sh'
-  $default_usercolor = 'cyan'
-  $custom_usercolors = { 'root' => 'magenta' }
-  $server_color      = undef
+  $default_usercolor = undef
+  $custom_usercolors = { 'root' => 'red' }
+  $host_color        = undef
   $env_name          = undef
   $env_color         = undef
 
   case $::osfamily {
-
     'RedHat': {
       $prompt      = '${env}[${userColor}\u\[\e[0m\]@${serverColor}\h\[\e[0m\] \W]\\$ '
       $modify_skel = false
@@ -26,7 +23,5 @@ class colorprompt::params {
     default: {
       fail("Unsupported osfamily: ${::osfamily}")
     }
-
   }
-
 }
