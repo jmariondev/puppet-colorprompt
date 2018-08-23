@@ -1,80 +1,76 @@
 #!/bin/bash
-set -feu
 
 # Managed by Puppet
 # Shell Prompt Coloring
 # This script adds colors to the user and host portions of the PS1 prompt.
 
 # If the shell isn't interactive, we have nothing to change.
-if ! [[ "$PS1" ]]; then
-	exit 0
+if [[ "$PS1" ]]; then
+	# This is used as a container to allow us to use locals instead of having to
+	# mass-undefine at the end of this script.
+	set_termcolor () {
+		local black=";30"
+		local red=";31"
+		local green=";32"
+		local yellow=";33"
+		local blue=";34"
+		local magenta=";35"
+		local cyan=";36"
+		local white=";37"
+
+		local bg_black=";40"
+		local bg_red=";41"
+		local bg_green=";42"
+		local bg_yellow=";43"
+		local bg_blue=";44"
+		local bg_magenta=";45"
+		local bg_cyan=";46"
+		local bg_white=";47"
+
+		local bright=";1"
+		local faint=";2"
+		local underline=";4"
+		local blink=";5"
+
+		<% if @default_usercolor and ! @default_usercolor.empty? -%>
+		<% if @default_usercolor.is_a?(Array) -%><% @default_usercolor = @default_usercolor.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+		local userColor="\[\e[0${<%= @default_usercolor %>}m\]"
+		<% else -%><%# (if @default_usercolor ... ) -%>
+		local userColor=
+		<% end -%><%# (if @default_usercolor ... ) -%>
+		<% if @host_color and ! @host_color.empty? -%>
+		<% if @host_color.is_a?(Array) -%><% @host_color = @host_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+		local hostColor="\[\e[0${<%= @host_color %>}m\]"
+		<% else -%><%# (if @host_color ... ) -%>
+		local hostColor=
+		<% end -%><%# (if @host_color ... ) -%>
+
+		<% if @custom_usercolors.is_a?(Hash) -%>
+		<% @custom_usercolors.each do |user, colors| -%>
+		if [[ "$USER" = '<%= user %>' ]]; then
+			<% if colors.is_a?(Array) -%><% colors = colors.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+			userColor="\[\e[0${<%= colors %>}m\]"
+		fi
+
+		<% end -%><%# ( @custom_usercolors.each ... ) -%>
+		<% end -%><%# ( if @custom_usercolors.is_a? ... ) -%>
+		<% if @env_name and ! @env_name.empty? -%>
+		<% if @env_color.is_a?(Array) -%><% @env_color = @env_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+		local env="\[\e[0${<%= @env_color %>}m\]<%= @env_name %>\[\e[0m\] "
+		<% else -%><%# ( if @env_name ... ) -%>
+		local env=
+		<% end -%><%# ( if @env_name ... ) -%>
+
+		# If the terminal doesn't support colors, reset these to empty string.
+		if ! tput colors > /dev/null 2> /dev/null; then
+			userColor=
+			hostColor=
+		fi
+
+		if [[ $TERM != "dumb" ]]; then
+			export PS1="<%= @prompt %>"
+		fi
+	}
+	set_termcolor
+	unset set_termcolor
 fi
-
-# This is used as a container to allow us to use locals instead of having to
-# mass-undefine at the end of this script.
-set_termcolor () {
-
-local black=";30"
-local red=";31"
-local green=";32"
-local yellow=";33"
-local blue=";34"
-local magenta=";35"
-local cyan=";36"
-local white=";37"
-
-local bg_black=";40"
-local bg_red=";41"
-local bg_green=";42"
-local bg_yellow=";43"
-local bg_blue=";44"
-local bg_magenta=";45"
-local bg_cyan=";46"
-local bg_white=";47"
-
-local bright=";1"
-local faint=";2"
-local underline=";4"
-local blink=";5"
-
-<% if @default_usercolor and ! @default_usercolor.empty? -%>
-<% if @default_usercolor.is_a?(Array) -%><% @default_usercolor = @default_usercolor.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-local userColor="\[\e[0${<%= @default_usercolor %>}m\]"
-<% else -%><%# (if @default_usercolor ... ) -%>
-local userColor=
-<% end -%><%# (if @default_usercolor ... ) -%>
-<% if @host_color and ! @host_color.empty? -%>
-<% if @host_color.is_a?(Array) -%><% @host_color = @host_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-local hostColor="\[\e[0${<%= @host_color %>}m\]"
-<% else -%><%# (if @host_color ... ) -%>
-local hostColor=
-<% end -%><%# (if @host_color ... ) -%>
-
-<% if @custom_usercolors.is_a?(Hash) -%>
-<% @custom_usercolors.each do |user, colors| -%>
-if [[ "$USER" = '<%= user %>' ]]; then
-<% if colors.is_a?(Array) -%><% colors = colors.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-  userColor="\[\e[0${<%= colors %>}m\]"
-fi
-
-<% end -%><%# ( @custom_usercolors.each ... ) -%>
-<% end -%><%# ( if @custom_usercolors.is_a? ... ) -%>
-<% if @env_name and ! @env_name.empty? -%>
-<% if @env_color.is_a?(Array) -%><% @env_color = @env_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-local env="\[\e[0${<%= @env_color %>}m\]<%= @env_name %>\[\e[0m\] "
-<% else -%><%# ( if @env_name ... ) -%>
-local env=
-<% end -%><%# ( if @env_name ... ) -%>
-
-# If the terminal doesn't support colors, reset these to empty string.
-if ! tput colors > /dev/null 2> /dev/null; then
-  userColor=
-  hostColor=
-fi
-
-if [[ $TERM != "dumb" ]]; then
-  export PS1="<%= @prompt %>"
-fi
-}
-set_termcolor
-undefine set_termcolor
