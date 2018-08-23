@@ -10,6 +10,10 @@ if ! [[ "$PS1" ]]; then
 	exit 0
 fi
 
+# This is used as a container to allow us to use locals instead of having to
+# mass-undefine at the end of this script.
+set_termcolor () {
+
 local black=";30"
 local red=";31"
 local green=";32"
@@ -64,10 +68,13 @@ local env=
 
 # If the terminal doesn't support colors, reset these to empty string.
 if ! tput colors > /dev/null 2> /dev/null; then
-  usercolor=
+  userColor=
   hostColor=
 fi
 
 if [[ $TERM != "dumb" ]]; then
   export PS1="<%= @prompt %>"
 fi
+}
+set_termcolor
+undefine set_termcolor
