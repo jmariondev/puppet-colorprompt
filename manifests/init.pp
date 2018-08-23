@@ -86,9 +86,9 @@ class colorprompt (
   # language creates some fun declarations!
   Variant[Undef, String, Array[String]] $default_usercolor = $colorprompt::params::default_usercolor,
   Variant[Undef, Hash[String, String]] $custom_usercolors  = $colorprompt::params::custom_usercolors,
-  Variant[Undef, String, Array[String]]] $host_color       = $colorprompt::params::host_color,
+  Variant[Undef, String, Array[String]] $host_color        = $colorprompt::params::host_color,
   Optional[String] $env_name                               = $colorprompt::params::env_name,
-  Variant[Undef, String, Array[String]]] $env_color        = $colorprompt::params::env_color,
+  Variant[Undef, String, Array[String]] $env_color         = $colorprompt::params::env_color,
   String $prompt                                           = $colorprompt::params::prompt,
   Boolean $modify_skel                                     = $colorprompt::params::modify_skel,
   Boolean $modify_root                                     = $colorprompt::params::modify_root,
