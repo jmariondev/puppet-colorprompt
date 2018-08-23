@@ -36,15 +36,15 @@ local blink=";5"
 <% if @default_usercolor and ! @default_usercolor.empty? -%>
 <% if @default_usercolor.is_a?(Array) -%><% @default_usercolor = @default_usercolor.map{|col| "\${#{col}}"}.join('') -%><% end -%>
 local userColor="\[\e[0${<%= @default_usercolor %>}m\]"
-<% else -%>
+<% else -%><%# (if @default_usercolor ... ) -%>
 local userColor=
-<% end -%>
+<% end -%><%# (if @default_usercolor ... ) -%>
 <% if @host_color and ! @host_color.empty? -%>
 <% if @host_color.is_a?(Array) -%><% @host_color = @host_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
 local hostColor="\[\e[0${<%= @host_color %>}m\]"
-<% else -%>
+<% else -%><%# (if @host_color ... ) -%>
 local hostColor=
-<% end -%>
+<% end -%><%# (if @host_color ... ) -%>
 
 <% if @custom_usercolors.is_a?(Hash) -%>
 <% @custom_usercolors.each do |user, colors| -%>
@@ -53,13 +53,14 @@ if [[ "$USER" = '<%= user %>' ]]; then
   userColor="\[\e[0${<%= colors %>}m\]"
 fi
 
-<% end -%>
+<% end -%><%# ( @custom_usercolors.each ... ) -%>
+<% end -%><%# ( if @custom_usercolors.is_a? ... ) -%>
 <% if @env_name and ! @env_name.empty? -%>
 <% if @env_color.is_a?(Array) -%><% @env_color = @env_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
 local env="\[\e[0${<%= @env_color %>}m\]<%= @env_name %>\[\e[0m\] "
-<% else -%>
+<% else -%><%# ( if @env_name ... ) -%>
 local env=
-<% end -%>
+<% end -%><%# ( if @env_name ... ) -%>
 
 # If the terminal doesn't support colors, reset these to empty string.
 if ! tput colors > /dev/null 2> /dev/null; then
