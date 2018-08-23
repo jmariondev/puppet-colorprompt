@@ -1,41 +1,45 @@
-#colorprompt
+# Puppet Color Prompt #
 
-##Overview
+## Overview ##
 
-The colorprompt module. Colors your bash prompt.
+This module adds colors to the user and host portions of the PS1 prompt.
 
-##Module Description
-The colorprompt module creates /etc/profile.d/colorprompt.sh, which sets a colored prompt. Different colors can be set for (all and specific) users, server name and environment tag.
+## Module Description ##
 
-##Usage
+This module adds a script to `/etc/profile.d` to insert terminal colors into
+your PS1 prompt variable. This is useful to help differentiate production
+system prompts from local prompts.
 
-All interaction with the colorprompt module can be done through the main colorprompt class.
+You haven't lived until you've accidentally shut down a production system! ;)
 
-###I just want a colored prompt, what's the minimum I need?
+## Usage ##
+
+### Basic Usage ###
+
+This will install the colorprompt script with the default settings. This will
+only color the user portion of the prompt when you are root.
 
 ```puppet
-include 'colorprompt'
+include ::colorprompt
 ```
 
-###I want a prompt for my production server with customised colors.
+### Production System in Red ###
+
+This is what you might define for a production system that should show a red
+hostname and prepend 'PROD' to your prompt:
 
 ```puppet
-class { 'colorprompt':
-   env_name          => 'PROD',
-   env_color         => ['white', 'bg_red'],
-   server_color      => 'red',
-   default_usercolor => 'cyan',
-   custom_usercolors => {
-     'root' => 'magenta',
-   },
+class { '::colorprompt':
+    env_name          => 'PROD',
+    env_color         => [ 'white', 'bg_red' ],
+    host_color        => 'red',
+    custom_usercolors => {
+      'root' => 'red',
+    },
 }
 ```
 
-###What does the example above look like?
-
-![prompt](https://raw.githubusercontent.com/sgnl05/sgnl05-colorprompt/master/example.png)
-
-###Great! What colors are available?
+### Available Colors ###
 
 * black
 * red
@@ -46,77 +50,81 @@ class { 'colorprompt':
 * cyan
 * white
 
-A background color can also be defined by using `bg_(color)`. Foreground and background colors can be combined by using arrays instead of strings (see `env_color` in example above).
+A background color can also be set with `bg_(color)`. Foreground and
+background colors can be combined by using arrays instead of strings (see
+`env_color` in example above).
 
-##Reference
+## Reference ##
 
-###Classes
+### Classes ###
 
-####Public Classes
+* colorprompt: Creates the script in /etc/profile.d/
 
-* colorprompt: Main and only class.
+### Parameters ###
 
-###Parameters
+#### `ensure` ####
 
-####`ensure`
+*Control if this module's functionality is active.*  
+Type: String  
+Default: 'present'
 
-String. Ensure if file /etc/profile.d/colorprompt.sh is present or absent.
-Defaults to present.
+#### `path` ####
 
-####`default_usercolor`
+*Path to the colorprompt script.*  
+Type: String  
+Default: '/etc/profile.d/colorprompt.sh'
 
-String or array. Sets the color for all users. Specific user colors can be overrided by 'custom_usercolors'.
-Defaults to 'cyan'.
+#### `default_usercolor` ####
+*Sets a color for all users. Specific user colors can be overridden
+by `custom_usercolors`.*  
+Type: String or Hash  
+Default: undef
 
-####`custom_usercolors`
+#### `custom_usercolors` ####
+*Sets the color for specific users.*  
+Type: Hash  
+Default: { 'root' => 'red' }
 
-Hash. Sets the color for specific users. Example: custom_usercolors => { 'apache' => 'blue', 'tomcat' => 'yellow' }
-Default is { 'root' => 'magenta' }
+#### `host_color` ####
+*Which color to use for the host portion of the prompt.*  
+Type: String or Array  
+Default: undef
 
-####`server_color`
+#### `env_name` ####
+*The string added to the beginning of the prompt, 'DEV', 'PROD', etc.*  
+Type: String  
+Default: undef
 
-String or array. Sets the color for the server name. 
-Defaults to unset.
+#### `env_color` ####
+*Color of the string added to the beginning of the prompt, see 'env_name'.*  
+Type: String or Array  
+Default: undef
 
-####`env_name`
+#### `prompt` ####
+*Format of the $PS1 variable. Use ${env}, ${userColor} and ${hostColor}.*  
+Type: String  
+Default:  
+`${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \w]\\$ ` on RedHat  
+`${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \W]\\$ ` on Debian
 
-String: Names an environment tag. Examples: 'PROD', 'QA', 'TEST', 'DEV'.
-Defaults to unset.
+#### `modify_skel` ####
+*Comments out PS1 variables in /etc/skel/.bashrc on Debian distributions.*  
+Type: Boolean  
+Default: true on Debian, false on RedHat
 
-####`env_color`
+#### `modify_root` ####
+*Comments out PS1 variables in /root/.bashrc on Debian distributions.*  
+Type: Boolean  
+Default: true on Debian, false on RedHat
 
-String or array. Sets the color for of the environment tag.
-Defaults to unset
+## Authors ##
 
-####`prompt`
+```plaintext
+Copyright 2014-2015 Gjermund Jensvoll <gjerjens@gmail.com>
+Copyright 2018 John Marion <jmarion-ext@arista.com>
+```
 
-String. Sets the final PS1 variable. This is an advanced setting, and should probably be left untouched unless you know what you're doing. :)
-Default varies with osfamily.
+## Limitations ##
 
-####`modify_skel`
-
-Boolean. Comments out PS1 variables in /etc/skel/.bashrc
-Default varies with osfamily.
-
-####`modify_root`
-
-Boolean. Comments out PS1 variables in /root/.bashrc
-Default varies with osfamily
-
-##Limitations
-
-This module has been tested against Puppet 3.0 and higher.
-
-The module has been tested on:
-* RedHat & CentOS 5/6/7
-* Ubuntu 12.04 & 14.04
-* Debian 6/7/8
-* Fedora 22/23
-
-Ubuntu and Debian need modification to existing user ~/.bashrc files (comment out PS1 variables).
-
-## Development
-
-###Contributing
-
-Please use the issue tracker (https://github.com/sgnl05/sgnl05-colorprompt/issues) for any type of contribution. 
+Ubuntu and Debian need modification to existing user ~/.bashrc files (comment
+out PS1 variables).
