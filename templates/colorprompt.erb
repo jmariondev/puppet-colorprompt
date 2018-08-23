@@ -1,54 +1,72 @@
+#!/bin/bash
+set -feu
+
 # Managed by Puppet
+# Shell Prompt Coloring
+# This script adds colors to the user and host portions of the PS1 prompt.
 
-if [ -z "$PS1" ]; then
-# Probably non-interactive shell..
-  return 0
+# If the shell isn't interactive, we have nothing to change.
+if ! [[ "$PS1" ]]; then
+	exit 0
 fi
 
-black=";30"
-red=";31"
-green=";32"
-yellow=";33"
-blue=";34"
-magenta=";35"
-cyan=";36"
-white=";37"
+local black=";30"
+local red=";31"
+local green=";32"
+local yellow=";33"
+local blue=";34"
+local magenta=";35"
+local cyan=";36"
+local white=";37"
 
-bg_black=";40"
-bg_red=";41"
-bg_green=";42"
-bg_yellow=";43"
-bg_blue=";44"
-bg_magenta=";45"
-bg_cyan=";46"
-bg_white=";47"
+local bg_black=";40"
+local bg_red=";41"
+local bg_green=";42"
+local bg_yellow=";43"
+local bg_blue=";44"
+local bg_magenta=";45"
+local bg_cyan=";46"
+local bg_white=";47"
 
-bright=";1"
-faint=";2"
-underline=";4"
-blink=";5"
+local bright=";1"
+local faint=";2"
+local underline=";4"
+local blink=";5"
 
-
-<%- if @custom_usercolors.is_a?(Hash) -%><%- @custom_usercolors.each do |user, colors| -%>
-if [ "$USER" = "<%= user %>" ]; then
-  userColor="\[\e[0<%- if colors.is_a?(Array) -%><% colors.each do |color| -%>${<%= color %>}<% end -%><%- else -%>${<%= colors %>}<%- end -%>m\]"
-el<%- end -%>se
-  userColor="\[\e[0<%- if @default_usercolor.is_a?(Array) -%><% @default_usercolor.each do |color| -%>${<%= color %>}<% end -%><%- else -%>${<%= @default_usercolor %>}<%- end -%>m\]"
-fi
-<% else -%>userColor="\[\e[0<%- if @default_usercolor.is_a?(Array) -%><% @default_usercolor.each do |color| -%>${<%= color %>}<% end -%><%- else -%>${<%= @default_usercolor %>}<%- end -%>m\]"<%- end -%>
-
-<% if @server_color and ! @server_color.empty? %>
-serverColor="\[\e[0<%- if @server_color.is_a?(Array) -%><%- @server_color.each do |color| -%>${<%= color %>}<%- end -%><%- else -%>${<%= @server_color %>}<%- end -%>m\]"
+<% if @default_usercolor and ! @default_usercolor.empty? -%>
+<% if @default_usercolor.is_a?(Array) -%><% @default_usercolor = @default_usercolor.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+local userColor="\[\e[0${<%= @default_usercolor %>}m\]"
+<% else -%>
+local userColor=
 <% end -%>
-<% if @env_name and ! @env_name.empty? %>
-env="\[\e[0<%- if @env_color.is_a?(Array) -%><% @env_color.each do |color| -%>${<%= color %>}<%- end -%><%- else -%>${<%= @env_color %>}<%- end -%>m\]<%= @env_name %>\[\e[0m\] "
-<% end %>
-# Set prompt
-if [ $TERM != "dumb" ]; then
-  PS1="<%= @prompt %>"
+<% if @host_color and ! @host_color.empty? -%>
+<% if @host_color.is_a?(Array) -%><% @host_color = @host_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+local hostColor="\[\e[0${<%= @host_color %>}m\]"
+<% else -%>
+local hostColor=
+<% end -%>
+
+<% if @custom_usercolors.is_a?(Hash) -%>
+<% @custom_usercolors.each do |user, colors| -%>
+if [[ "$USER" = '<%= user %>' ]]; then
+<% if colors.is_a?(Array) -%><% colors = colors.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+  userColor="\[\e[0${<%= colors %>}m\]"
 fi
 
-# Remove variables from the environment
-unset userColor serverColor blue red green yellow blue magenta cyan white
-unset bg_black bg_red bg_green bg_yellow bg_blue bg_magenta bg_cyan bg_white
-unset bright faint underline blink
+<% end -%>
+<% if @env_name and ! @env_name.empty? -%>
+<% if @env_color.is_a?(Array) -%><% @env_color = @env_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
+local env="\[\e[0${<%= @env_color %>}m\]<%= @env_name %>\[\e[0m\] "
+<% else -%>
+local env=
+<% end -%>
+
+# If the terminal doesn't support colors, reset these to empty string.
+if ! tput colors > /dev/null 2> /dev/null; then
+  usercolor=
+  hostColor=
+fi
+
+if [[ $TERM != "dumb" ]]; then
+  export PS1="<%= @prompt %>"
+fi
