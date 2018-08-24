@@ -26,20 +26,20 @@ include ::colorprompt
 ### Production System in Red ###
 
 This is what you might define for a production system that should show a red
-hostname and prepend 'PROD' to your prompt:
+hostname and prepend a red 'PRD' to your prompt:
 
 ```puppet
 class { '::colorprompt':
-    env_name          => 'PROD',
-    env_color         => [ 'white', 'bg_red' ],
-    host_color        => 'red',
-    custom_usercolors => {
-      'root' => 'red',
-    },
+  env_name   => 'PRD',
+  env_color  => 'red',
+  host_color => 'red',
 }
 ```
 
 ### Available Colors ###
+
+This module supports the basic colors of an 8-color terminal, which should be
+pretty universally supported:
 
 * black
 * red
@@ -50,15 +50,33 @@ class { '::colorprompt':
 * cyan
 * white
 
-A background color can also be set with `bg_(color)`. Foreground and
-background colors can be combined by using arrays instead of strings (see
-`env_color` in example above).
+All of these are also available as background colors by adding 'bg_' to the
+beginning of the color name, eg `bg_yellow`.
+
+A few styles are also supported:
+
+* bright
+* faint
+* underline
+* blink
+
+### Combining Colors ###
+
+You can combine multiple colors and styles by defining an array instead of
+just a string. For example, this monstrosity:
+
+```puppet
+class { '::colorprompt':
+  env_name  => 'ATROCIOUS',
+  env_color => [ 'underline', 'green', 'bg_red' ],
+}
+```
 
 ## Reference ##
 
 ### Classes ###
 
-* colorprompt: Creates the script in /etc/profile.d/
+* `colorprompt`: Creates the script in /etc/profile.d/
 
 ### Parameters ###
 
@@ -104,8 +122,8 @@ Default: undef
 *Format of the $PS1 variable. Use ${env}, ${userColor} and ${hostColor}.*  
 Type: String  
 Default:  
-`${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \w]\\$ ` on RedHat  
-`${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \W]\\$ ` on Debian
+`${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \w]\\\\$ ` on RedHat  
+`${env}${debian_chroot:+($debian_chroot)}${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\]:\w\\\\$ ` on Debian
 
 #### `modify_skel` ####
 *Comments out PS1 variables in /etc/skel/.bashrc on Debian distributions.*  
