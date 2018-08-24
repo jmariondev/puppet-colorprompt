@@ -15,7 +15,7 @@ class colorprompt::params {
     }
 
     'Debian': {
-      $prompt      = '${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \w]\\\\$ '
+      $prompt      = '${env}${debian_chroot:+($debian_chroot)}${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\]:\w\\\\$ '
       $modify_skel = true
       $modify_root = true
     }
