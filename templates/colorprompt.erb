@@ -5,7 +5,7 @@
 # This script adds colors to the user and host portions of the PS1 prompt.
 
 # If the shell isn't interactive, we have nothing to change.
-if [[ "$PS1" ]]; then
+if [[ ( "$PS1" ) && ( "$TERM" != 'dumb' ) ]]; then
 	# This is used as a container to allow us to use locals instead of having to
 	# mass-undefine at the end of this script.
 	set_termcolor () {
@@ -67,9 +67,7 @@ if [[ "$PS1" ]]; then
 			hostColor=
 		fi
 
-		if [[ $TERM != "dumb" ]]; then
-			export PS1="<%= @prompt %>"
-		fi
+		export PS1="<%= @prompt %>"
 	}
 	set_termcolor
 	unset set_termcolor
