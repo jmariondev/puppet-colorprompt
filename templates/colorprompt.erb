@@ -33,30 +33,30 @@ if [[ "$PS1" ]]; then
 		local blink=";5"
 
 <% if @default_usercolor and ! @default_usercolor.empty? -%>
-<% if @default_usercolor.is_a?(Array) -%><% @default_usercolor = @default_usercolor.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-		local userColor="\[\e[0${<%= @default_usercolor %>}m\]"
-<% else -%><%# (if @default_usercolor ... ) -%>
+<% if @default_usercolor.is_a?(String) -%><% @default_usercolor = [ @default_usercolor ] -%><% end -%>
+		local userColor="\[\e[0<%= @default_usercolor.map{|col| "\${#{col}}"}.join('') %>m\]"
+<% else -%><%# (if @default_usercolor and ... ) -%>
 		local userColor=
-<% end -%><%# (if @default_usercolor ... ) -%>
+<% end -%><%# (if @default_usercolor and ... ) -%>
 <% if @host_color and ! @host_color.empty? -%>
-<% if @host_color.is_a?(Array) -%><% @host_color = @host_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-		local hostColor="\[\e[0${<%= @host_color %>}m\]"
-<% else -%><%# (if @host_color ... ) -%>
+<% if @host_color.is_a?(String) -%><% @host_color = [ @host_color ] -%><% end -%>
+		local hostColor="\[\e[0<%= @host_color.map{|col| "\${#{col}}"}.join('') %>m\]"
+<% else -%><%# (if @host_color and ... ) -%>
 		local hostColor=
-<% end -%><%# (if @host_color ... ) -%>
+<% end -%><%# (if @host_color and ... ) -%>
 
 <% if @custom_usercolors.is_a?(Hash) -%>
 <% @custom_usercolors.each do |user, colors| -%>
 		if [[ "$USER" = '<%= user %>' ]]; then
-<% if colors.is_a?(Array) -%><% colors = colors.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-			userColor="\[\e[0${<%= colors %>}m\]"
+<% if colors.is_a?(String) -%><% colors = [ colors ] -%><% end -%>
+			userColor="\[\e[0<%= colors.map{|col| "\${#{col}}"}.join('') %>m\]"
 		fi
 
 <% end -%><%# ( @custom_usercolors.each ... ) -%>
 <% end -%><%# ( if @custom_usercolors.is_a? ... ) -%>
 <% if @env_name and ! @env_name.empty? -%>
-<% if @env_color.is_a?(Array) -%><% @env_color = @env_color.map{|col| "\${#{col}}"}.join('') -%><% end -%>
-		local env="\[\e[0${<%= @env_color %>}m\]<%= @env_name %>\[\e[0m\] "
+<% if @env_color.is_a?(String) -%><% @env_color = [ @env_color ] -%><% end -%>
+		local env="\[\e[0<%= @env_color.map{|col| "\${#{col}}"}.join('') %>m\]<%= @env_name %>\[\e[0m\] "
 <% else -%><%# ( if @env_name ... ) -%>
 		local env=
 <% end -%><%# ( if @env_name ... ) -%>
