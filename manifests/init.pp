@@ -45,7 +45,7 @@
 #   Type: String
 #   Default:
 #   '${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \w]\\$ ' on RedHat
-#   '${env}[${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\] \W]\\$ ' on Debian
+#   '${env}${debian_chroot:+($debian_chroot)}${userColor}\u\[\e[0m\]@${hostColor}\h\[\e[0m\]:\w\\$ ' on Debian
 #
 # [*modify_skel*]
 #   Comments out PS1 variables in /etc/skel/.bashrc on Debian distributions.
@@ -80,19 +80,19 @@
 # Copyright 2018 John Marion
 #
 class colorprompt (
-  String $ensure                                           = $colorprompt::params::ensure,
-  String $path                                             = $colorprompt::params::path,
+  String $ensure,
+  String $path,
   # Oof, trying to turn a formerly-duck-typed language into a formally-typed
   # language creates some fun declarations!
-  Variant[Undef, String, Array[String]] $default_usercolor = $colorprompt::params::default_usercolor,
-  Variant[Undef, Hash[String, String]] $custom_usercolors  = $colorprompt::params::custom_usercolors,
-  Variant[Undef, String, Array[String]] $host_color        = $colorprompt::params::host_color,
-  Optional[String] $env_name                               = $colorprompt::params::env_name,
-  Variant[Undef, String, Array[String]] $env_color         = $colorprompt::params::env_color,
-  String $prompt                                           = $colorprompt::params::prompt,
-  Boolean $modify_skel                                     = $colorprompt::params::modify_skel,
-  Boolean $modify_root                                     = $colorprompt::params::modify_root,
-) inherits colorprompt::params {
+  Variant[Undef, String, Array[String]] $default_usercolor,
+  Variant[Undef, Hash[String, String]] $custom_usercolors,
+  Variant[Undef, String, Array[String]] $host_color,
+  Optional[String] $env_name,
+  Variant[Undef, String, Array[String]] $env_color,
+  String $prompt,
+  Boolean $modify_skel,
+  Boolean $modify_root,
+) {
   file { 'colorprompt.sh':
     ensure  => $ensure,
     path    => $path,

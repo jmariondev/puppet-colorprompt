@@ -1,0 +1,8 @@
+colorprompt::ensure: present
+colorprompt::path: /etc/profile.d/colorprompt.sh
+colorprompt::default_usercolor: null
+colorprompt::custom_usercolors:
+  root: red
+colorprompt::host_color: null
+colorprompt::env_name: null
+colorprompt::env_color: null
