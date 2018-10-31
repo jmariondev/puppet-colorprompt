@@ -1,6 +1,6 @@
 {
   "name": "jmarion-colorprompt",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": "jmarion",
   "summary": "Adds colors to the user and host portions of the PS1 prompt.",
   "license": "Apache-2.0",
