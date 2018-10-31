@@ -85,7 +85,7 @@ class colorprompt (
   # Oof, trying to turn a formerly-duck-typed language into a formally-typed
   # language creates some fun declarations!
   Variant[Undef, String, Array[String]] $default_usercolor,
-  Variant[Undef, Hash[String, String]] $custom_usercolors,
+  Variant[Undef, Hash[String, String], Hash[String, Array[String]]] $custom_usercolors,
   Variant[Undef, String, Array[String]] $host_color,
   Optional[String] $env_name,
   Variant[Undef, String, Array[String]] $env_color,

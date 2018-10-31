@@ -4,6 +4,11 @@
 # Shell Prompt Coloring
 # This script adds colors to the user and host portions of the PS1 prompt.
 
+# If the shell isn't bash or bash-compatible, we do not change the prompt.
+if [ -z "$BASH" ]; then
+    return
+fi
+
 # If the shell isn't interactive, we have nothing to change.
 if [[ ( "$PS1" ) && ( "$TERM" != 'dumb' ) ]]; then
 	# This is used as a container to allow us to use locals instead of having to

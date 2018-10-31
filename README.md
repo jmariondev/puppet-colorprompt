@@ -95,7 +95,7 @@ Default: '/etc/profile.d/colorprompt.sh'
 #### `default_usercolor` ####
 *Sets a color for all users. Specific user colors can be overridden
 by `custom_usercolors`.*  
-Type: String or Hash  
+Type: String or Array  
 Default: undef
 
 #### `custom_usercolors` ####
